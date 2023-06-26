@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBot.Core.Services;
@@ -16,6 +18,8 @@ public class UpdateHandler : IUpdateHandler
         _botClient = botClient;
         _logger = logger;
     }
+
+    private static string SelectedCurrency { get; set; } = string.Empty;
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
@@ -40,7 +44,7 @@ public class UpdateHandler : IUpdateHandler
         {
             "/start" => SendSelectCurrency(_botClient, message, cancellationToken),
             "/help" => SendHelpMessage(_botClient, message, cancellationToken),
-            _ => SendHelpMessage(_botClient, message, cancellationToken)
+            _ => IsMatchDate(_botClient, message, cancellationToken)
         };
 
         var sendMessage = await action;
@@ -61,6 +65,26 @@ public class UpdateHandler : IUpdateHandler
                 replyMarkup: currencyInlineKeyboard,
                 cancellationToken: cancellationToken);
         }
+
+        static async Task<Message> IsMatchDate(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrEmpty(SelectedCurrency) && Regex.IsMatch(message.Text!, @"^\d{2}.\d{2}.\d{4}$"))
+            {
+                await botClient.SendChatActionAsync(
+                    chatId: message.Chat.Id,
+                    chatAction: ChatAction.Typing,
+                    cancellationToken: cancellationToken);
+
+                await Task.Delay(500, cancellationToken);
+                
+                return await botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: $"Exchange rate: {SelectedCurrency} and date: {message.Text}",
+                    cancellationToken: cancellationToken);
+            }
+
+            return await SendHelpMessage(botClient, message, cancellationToken);
+        }
     }
 
     private async Task OnCallBackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
@@ -68,8 +92,6 @@ public class UpdateHandler : IUpdateHandler
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
         if (callbackQuery.Data is not {} callbackQueryData) return;
-
-        var currentRate = string.Empty;
 
         var action = callbackQueryData.Split(' ')[0] switch
         {
@@ -86,6 +108,8 @@ public class UpdateHandler : IUpdateHandler
             
         static async Task<Message> SendSelectDate(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
+            SelectedCurrency = callbackQuery.Data!;
+            
             var dateInlineKeyboard = new InlineKeyboardMarkup(new[]
             {
                 InlineKeyboardButton.WithCallbackData("Today", "Today"),
