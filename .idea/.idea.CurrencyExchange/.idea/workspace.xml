@@ -7,9 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a598547-59ff-4902-b2fa-707294afaaa8" name="Changes" comment="correction">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0a598547-59ff-4902-b2fa-707294afaaa8" name="Changes" comment="catch bad request" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +90,7 @@
       <workItem from="1687721903004" duration="4281000" />
       <workItem from="1687775697244" duration="17167000" />
       <workItem from="1687810269480" duration="1696000" />
-      <workItem from="1687862718139" duration="10408000" />
+      <workItem from="1687862718139" duration="11067000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -142,7 +140,15 @@
       <option name="project" value="LOCAL" />
       <updated>1687872972394</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="catch bad request">
+      <option name="closed" value="true" />
+      <created>1687874329540</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1687874329540</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -167,7 +173,8 @@
     <MESSAGE value="date handle" />
     <MESSAGE value="api service" />
     <MESSAGE value="correction" />
-    <option name="LAST_COMMIT_MESSAGE" value="correction" />
+    <MESSAGE value="catch bad request" />
+    <option name="LAST_COMMIT_MESSAGE" value="catch bad request" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
