@@ -17,10 +17,12 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration));
+        
+        services.Configure<PrivatConfiguration>(context.Configuration.GetSection(PrivatConfiguration.Configuration));
 
-        services.AddHttpClient<ExchangeArchiveService>(client =>
+        services.AddHttpClient<ExchangeArchiveService>((serviceProvider, client) =>
         {
-            client.BaseAddress = new Uri(@"https://api.privatbank.ua");
+            client.BaseAddress = new Uri(serviceProvider.GetConfiguration<PrivatConfiguration>().BaseUrl!);
         });
         
         services.AddHttpClient("telegram_bot_client")
