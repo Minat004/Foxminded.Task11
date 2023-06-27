@@ -189,7 +189,7 @@ public class UpdateHandler : IUpdateHandler
             chatId: chatId,
             text: $"Exchange currency: {SelectedCurrency}\n" +
                   $"Date: {dateTime:dd.MM.yyyy}\n" +
-                  $"Sale rate: {exchangeRate!.SaleRate}\n" +
+                  $"Sale rate: {exchangeRate.SaleRate}\n" +
                   $"Purchase rate: {exchangeRate.PurchaseRate}",
             cancellationToken: cancellationToken);
     }
