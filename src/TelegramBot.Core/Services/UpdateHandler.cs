@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -12,11 +13,13 @@ public class UpdateHandler : IUpdateHandler
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<UpdateHandler> _logger;
+    private readonly ExchangeArchiveService _exchangeArchiveService;
 
-    public UpdateHandler(ITelegramBotClient botClient, ILogger<UpdateHandler> logger)
+    public UpdateHandler(ITelegramBotClient botClient, ILogger<UpdateHandler> logger, ExchangeArchiveService exchangeArchiveService)
     {
         _botClient = botClient;
         _logger = logger;
+        _exchangeArchiveService = exchangeArchiveService;
     }
 
     private static string SelectedCurrency { get; set; } = string.Empty;
@@ -44,7 +47,7 @@ public class UpdateHandler : IUpdateHandler
         {
             "/start" => SendSelectCurrency(_botClient, message, cancellationToken),
             "/help" => SendHelpMessage(_botClient, message, cancellationToken),
-            _ => IsMatchDate(_botClient, message, cancellationToken)
+            _ => IsMatchDate(_botClient, message, cancellationToken, _exchangeArchiveService, _logger)
         };
 
         var sendMessage = await action;
@@ -66,21 +69,29 @@ public class UpdateHandler : IUpdateHandler
                 cancellationToken: cancellationToken);
         }
 
-        static async Task<Message> IsMatchDate(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+        static async Task<Message> IsMatchDate(ITelegramBotClient botClient, Message message, 
+            CancellationToken cancellationToken, ExchangeArchiveService exchangeArchiveService, ILogger logger)
         {
             if (!string.IsNullOrEmpty(SelectedCurrency) && Regex.IsMatch(message.Text!, @"^\d{2}.\d{2}.\d{4}$"))
             {
-                await botClient.SendChatActionAsync(
-                    chatId: message.Chat.Id,
-                    chatAction: ChatAction.Typing,
-                    cancellationToken: cancellationToken);
+                var dates = message.Text!.Split(".");
 
-                await Task.Delay(500, cancellationToken);
-                
-                return await botClient.SendTextMessageAsync(
-                    chatId: message.Chat.Id,
-                    text: $"Exchange rate: {SelectedCurrency} and date: {message.Text}",
-                    cancellationToken: cancellationToken);
+                try
+                {
+                    var date = new DateTime(int.Parse(dates[2]), int.Parse(dates[1]), int.Parse(dates[0]));
+
+                    return await SendDateMessage(botClient, message, exchangeArchiveService, date, cancellationToken);
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    logger.LogWarning("Exception message: {Exception}", ex.Message);
+
+                    return await botClient.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: "Bad date time format try again...\n" +
+                              "[format - dd.MM.yyyy {01.12.2014}]",
+                        cancellationToken: cancellationToken);
+                }
             }
 
             return await SendHelpMessage(botClient, message, cancellationToken);
@@ -98,7 +109,7 @@ public class UpdateHandler : IUpdateHandler
             "USD" => SendSelectDate(_botClient, callbackQuery, cancellationToken),
             "EUR" => SendSelectDate(_botClient, callbackQuery, cancellationToken),
             "PLZ" => SendSelectDate(_botClient, callbackQuery, cancellationToken),
-            "Today" => SendTypeDate(_botClient, callbackQuery, cancellationToken),
+            "Today" => SendDateMessage(_botClient, callbackQuery.Message!, _exchangeArchiveService, DateTime.Today, cancellationToken),
             "SetDate" => SendTypeDate(_botClient, callbackQuery, cancellationToken),
             _ => SendHelpMessage(_botClient, callbackQuery.Message!, cancellationToken)
         };
@@ -128,7 +139,8 @@ public class UpdateHandler : IUpdateHandler
         {
             return await botClient.SendTextMessageAsync(
                 chatId: callbackQuery.Message!.Chat.Id,
-                text: "Type date [format - dd:mm:yyyy]",
+                text: "Type date:\n" +
+                      "[format - dd.MM.yyyy {01.12.2014}]",
                 cancellationToken: cancellationToken);
         }
     }
@@ -143,9 +155,57 @@ public class UpdateHandler : IUpdateHandler
             text: helpMessage,
             cancellationToken: cancellationToken);
     }
-
-    public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    
+    private static async Task<Message> SendDateMessage(ITelegramBotClient botClient, Message message, 
+        ExchangeArchiveService exchangeArchiveService, DateTime dateTime, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var chatId = message.Chat.Id;
+        
+        await botClient.SendChatActionAsync(
+            chatId: chatId,
+            chatAction: ChatAction.Typing,
+            cancellationToken: cancellationToken);
+        
+        await Task.Delay(500, cancellationToken);
+
+        var exchange = await exchangeArchiveService.GetExchangeRate(dateTime);
+
+        var exchangeRate = exchange!.ExchangeRates!.FirstOrDefault(x => x.Currency == SelectedCurrency);
+
+        if (exchangeRate is null && SelectedCurrency == "PLZ")
+        {
+            exchangeRate = exchange.ExchangeRates!.FirstOrDefault(x => x.Currency == "PLN");
+        }
+
+        if (exchangeRate is null)
+        {
+            return await botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: "Something went wrong. Try type another date:",
+                cancellationToken: cancellationToken);
+        }
+
+        return await botClient.SendTextMessageAsync(
+            chatId: chatId,
+            text: $"Exchange currency: {SelectedCurrency}\n" +
+                  $"Date: {dateTime:dd.MM.yyyy}\n" +
+                  $"Sale rate: {exchangeRate!.SaleRate}\n" +
+                  $"Purchase rate: {exchangeRate.PurchaseRate}",
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    {
+        var ErrorMessage = exception switch
+        {
+            ApiRequestException apiRequestException => $"Telegram API Error:\n" +
+                                                       $"[{apiRequestException.ErrorCode}]\n" +
+                                                       $"{apiRequestException.Message}",
+            _ => exception.ToString()
+        };
+
+        _logger.LogInformation("HandleError: {ErrorMessage}", ErrorMessage);
+
+        if (exception is RequestException) await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
     }
 }
