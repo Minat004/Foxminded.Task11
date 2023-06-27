@@ -7,19 +7,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a598547-59ff-4902-b2fa-707294afaaa8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/TelegramBot.Core/Converters/CustomDateTimeConverter.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/TelegramBot.Core/Models/ExchangeArchive.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/TelegramBot.Core/Models/ExchangeRate.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/TelegramBot.Core/Services/ExchangeArchiveService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CurrencyExchange.sln" beforeDir="false" afterPath="$PROJECT_DIR$/UahExchangeRate.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TelegramBot.Core/Services/UpdateHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/TelegramBot.Core/Services/UpdateHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TelegramBot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/TelegramBot/Program.cs" afterDir="false" />
+    <list default="true" id="0a598547-59ff-4902-b2fa-707294afaaa8" name="Changes" comment="correction">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CurrencyExchange/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +27,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/474bbd9de7d198b70f9e1f82c1386021ad1bbcd151629a7e81c37a49805e3e/TelegramBotClientExtensions.ApiMethods.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/575c31ecc35a636b6f962cb71d53992552941a18982aae1c8e6c16305cc3761b/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://E:/RiderProjects/task11/src/TelegramBot.Core/Services/UpdateHandler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/RiderProjects/task11/src/TelegramBot.Core/Services/UpdateHandler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/RiderProjects/task11/src/TelegramBot/Program.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -101,7 +92,7 @@
       <workItem from="1687721903004" duration="4281000" />
       <workItem from="1687775697244" duration="17167000" />
       <workItem from="1687810269480" duration="1696000" />
-      <workItem from="1687862718139" duration="9376000" />
+      <workItem from="1687862718139" duration="10408000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -135,7 +126,23 @@
       <option name="project" value="LOCAL" />
       <updated>1687811965511</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="api service">
+      <option name="closed" value="true" />
+      <created>1687872903891</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1687872903891</updated>
+    </task>
+    <task id="LOCAL-00006" summary="correction">
+      <option name="closed" value="true" />
+      <created>1687872972394</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1687872972394</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -158,26 +165,11 @@
     <MESSAGE value="init" />
     <MESSAGE value="polling" />
     <MESSAGE value="date handle" />
-    <option name="LAST_COMMIT_MESSAGE" value="date handle" />
+    <MESSAGE value="api service" />
+    <MESSAGE value="correction" />
+    <option name="LAST_COMMIT_MESSAGE" value="correction" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/TelegramBot.Core/Services/UpdateHandler.cs</url>
-          <line>161</line>
-          <properties documentPath="E:\RiderProjects\task11\src\TelegramBot.Core\Services\UpdateHandler.cs" initialLine="161" containingFunctionPresentation="Method 'SendDateMessage'">
-            <startOffsets>
-              <option value="7272" />
-            </startOffsets>
-            <endOffsets>
-              <option value="7301" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#System.Net.Http.HttpResponseMessage" memberName="RequestMessage" />
